@@ -24,6 +24,7 @@ function Console() {
   const [isLossless, setIsLossless] = React.useState(true);
   const [inputGain, setInputGain] = React.useState(1);
   const [outputGain, setOutputGain] = React.useState(1);
+  const [latency, setLatency] = React.useState(0);
 
   const getInputDevices = async () => {
     await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -44,7 +45,7 @@ function Console() {
 
   const startStreaming = async () => {
     let stream_n = await navigator.mediaDevices.getUserMedia(constraints);
-    let audioContext_n = new AudioContext({ sampleRate: 48000, latencyHint: 0 });
+    let audioContext_n = new AudioContext({ sampleRate: 48000, latencyHint: latency });
 
     try {
       await audioContext_n.audioWorklet.addModule("/worklet.js");
@@ -126,6 +127,14 @@ function Console() {
     if (isStreaming) {
       startStreaming();
     } else {
+      if (audioContext) {
+        if (audioContext.state !== "closed") {
+          audioContext.close();
+          console.log("AudioContext closed.");
+        } else {
+          console.log("AudioContext is already closed.");
+        }
+      }
     }
   }, [isStreaming]);
 
@@ -164,7 +173,7 @@ function Console() {
         setSelectedOutputDevice(outputDevicesList[outputDevicesList.length - 1].deviceId);
       }
     }
-  }, [inputGain, outputGain, isLossless]);
+  }, [inputGain, outputGain, isLossless, latency]);
 
   return (
     <div>
@@ -346,7 +355,18 @@ function Console() {
 
         <div className="flex items-center mt-4">
           <p className="text-sm text-neutral-600">Latency control:</p>
-          <Slider size="sm" step={0.1} maxValue={10} minValue={0} aria-label="Temperature" defaultValue={0} className="max-w-[250px] ml-3" />
+          <Slider
+            value={latency}
+            onChange={(value) => setLatency(value)}
+            showTooltip
+            size="sm"
+            step={0.1}
+            maxValue={10}
+            minValue={0}
+            aria-label="Temperature"
+            defaultValue={0}
+            className="max-w-[250px] ml-3"
+          />
         </div>
       </div>
 
