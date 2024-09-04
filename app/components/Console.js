@@ -370,11 +370,29 @@ function Console() {
         </div>
       </div>
 
+      <audio
+        id="sample-audio"
+        onEnded={() => {
+          document.getElementById("sample-audio-btn").style.color = "#737373";
+          document.getElementById("sample-audio").currentTime = 0;
+        }}
+        src="/notification.mov"
+      ></audio>
+
       <div className="flex items-center mt-16 px-8">
         <div className="flex items-center w-fit gap-2">
           <button className="text-sm text-neutral-500">Reset settings</button>
           <span className="text-neutral-400">|</span>
-          <button className="text-sm text-neutral-500">Play test sound</button>
+          <button
+            id="sample-audio-btn"
+            onClick={() => {
+              document.getElementById("sample-audio").play();
+              document.getElementById("sample-audio-btn").style.color = "#3b82f6";
+            }}
+            className="text-sm text-neutral-500"
+          >
+            Play test sound
+          </button>
         </div>
         <div className="flex items-center ml-auto">
           <Button onClick={() => setIsStreaming(!isStreaming)} className="text-white bg-neutral-800 rounded-lg">
