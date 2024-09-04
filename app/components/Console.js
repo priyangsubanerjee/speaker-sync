@@ -1,16 +1,35 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { Slider, Switch } from "@nextui-org/react";
-import React from "react";
+import { Button, Slider, Switch } from "@nextui-org/react";
+import React, { useEffect } from "react";
 
 function Console() {
   const [inputDevicesList, setInputDevicesList] = React.useState([]);
   const [outputDevicesList, setOutputDevicesList] = React.useState([]);
+  const [selectedInputDevice, setSelectedInputDevice] = React.useState(null);
+  const [selectedOutputDevice, setSelectedOutputDevice] = React.useState(null);
+  const [stream, setStream] = React.useState(null);
+  const [audioContext, setAudioContext] = React.useState(null);
+  const [isStreaming, setIsStreaming] = React.useState(false);
+  const [constraints, setConstraints] = React.useState({
+    audio: {
+      deviceId: selectedInputDevice ? { exact: selectedInputDevice } : undefined,
+      sampleRate: 48000,
+      channelCount: 1,
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false,
+    },
+  });
 
   const getInputDevices = async () => {
     await navigator.mediaDevices.getUserMedia({ audio: true });
     const devices = await navigator.mediaDevices.enumerateDevices();
     const audioInputDevices = devices.filter((device) => device.kind === "audioinput");
     setInputDevicesList(audioInputDevices);
+    if (selectedInputDevice === null && audioInputDevices.length > 0) {
+      setSelectedInputDevice(audioInputDevices[0].deviceId);
+    }
   };
 
   const getOutputDevices = async () => {
@@ -18,6 +37,46 @@ function Console() {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const audioOutputDevices = devices.filter((device) => device.kind === "audiooutput");
     setOutputDevicesList(audioOutputDevices);
+  };
+
+  const startStreaming = async () => {
+    let stream_n = await navigator.mediaDevices.getUserMedia(constraints);
+    let audioContext_n = new AudioContext({ sampleRate: 48000, latencyHint: 0 });
+
+    try {
+      await audioContext_n.audioWorklet.addModule("/worklet.js");
+      console.log("AudioWorklet module registered successfully.");
+    } catch (error) {
+      console.error("Failed to register AudioWorklet module:", error);
+      return;
+    }
+
+    const gainNode = new AudioWorkletNode(audioContext_n, "gain-processor", {
+      parameterData: { inputGain: 1, outputGain: 1 },
+    });
+
+    gainNode.port.onmessage = (event) => {
+      console.log("Message from AudioWorkletProcessor:", event.data);
+    };
+
+    const source = audioContext_n.createMediaStreamSource(stream_n);
+    source.connect(gainNode);
+    gainNode.connect(audioContext_n.destination);
+
+    console.log("Microphone audio processing started.");
+    setStream(stream_n);
+    setAudioContext(audioContext_n);
+
+    if (audioContext_n.state === "suspended") {
+      await audioContext_n.resume();
+      console.log("Audio context resumed.");
+    }
+
+    stream_n.getTracks().forEach((track) => {
+      track.onended = () => {
+        console.warn("Microphone track ended.");
+      };
+    });
   };
 
   React.useEffect(() => {
@@ -37,6 +96,22 @@ function Console() {
       navigator.mediaDevices.removeEventListener("devicechange", handleDeviceChange);
     };
   }, [inputDevicesList]);
+
+  useEffect(() => {
+    if (isStreaming) {
+      startStreaming();
+    } else {
+    }
+  }, [isStreaming]);
+
+  useEffect(() => {
+    setConstraints({
+      audio: {
+        ...constraints.audio,
+        deviceId: selectedInputDevice ? { exact: selectedInputDevice } : undefined,
+      },
+    });
+  }, [selectedInputDevice, selectedOutputDevice]);
 
   return (
     <div>
@@ -84,10 +159,8 @@ function Console() {
               <span>Source</span>
             </div>
             <div className="pl-5 pr-2 mt-2 mb-3 flex items-center">
-              <select className="appearance-none bg-white w-full outline-none" name="" id="">
-                <option value="">Select source</option>
+              <select onChange={(e) => setSelectedInputDevice(e.target.value)} className="appearance-none bg-white w-full outline-none" name="" id="">
                 {inputDevicesList.map((device) => {
-                  console.log(device);
                   return (
                     <option key={device.deviceId} value={device.deviceId}>
                       {device.label}
@@ -103,7 +176,7 @@ function Console() {
               </svg>
             </div>
           </div>
-          <div className="border rounded-lg">
+          <div className="border rounded-lg opacity-50 pointer-events-none select-none">
             <div className="flex px-4 mt-3 w-fit gap-1 items-center text-sm text-neutral-600">
               <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 24 24">
                 <path
@@ -114,7 +187,7 @@ function Console() {
               <span>Destination</span>
             </div>
             <div className="pl-5 pr-2 mt-2 mb-3 flex items-center">
-              <select className="appearance-none bg-white w-full outline-none" name="" id="">
+              <select onChange={(e) => setSelectedOutputDevice(e.target.value)} className="appearance-none bg-white w-full outline-none" name="" id="">
                 {outputDevicesList.map((device) => {
                   return (
                     <option key={device.deviceId} value={device.deviceId}>
@@ -183,6 +256,25 @@ function Console() {
         <div className="flex items-center mt-4">
           <p className="text-sm text-neutral-600">Latency control:</p>
           <Slider size="sm" step={0.1} maxValue={10} minValue={0} aria-label="Temperature" defaultValue={0} className="max-w-[250px] ml-3" />
+        </div>
+      </div>
+
+      <div className="flex items-center mt-16 px-8">
+        <div className="flex items-center w-fit gap-2">
+          <button className="text-sm text-neutral-500">Reset settings</button>
+          <span className="text-neutral-400">|</span>
+          <button className="text-sm text-neutral-500">Play test sound</button>
+        </div>
+        <div className="flex items-center ml-auto">
+          <Button onClick={() => setIsStreaming(!isStreaming)} className="text-white bg-neutral-800 rounded-lg">
+            <span className="text-sm">{isStreaming ? "Stop streaming" : "Start streaming"}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width={18} height={18} viewBox="0 0 256 256">
+              <path
+                fill="currentColor"
+                d="M240 128a15.74 15.74 0 0 1-7.6 13.51L88.32 229.65a16 16 0 0 1-16.2.3A15.86 15.86 0 0 1 64 216.13V39.87a15.86 15.86 0 0 1 8.12-13.82a16 16 0 0 1 16.2.3l144.08 88.14A15.74 15.74 0 0 1 240 128"
+              ></path>
+            </svg>
+          </Button>
         </div>
       </div>
     </div>
