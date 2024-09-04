@@ -53,7 +53,7 @@ export default function Home() {
                   <span>Source</span>
                 </div>
                 <div className="pl-5 pr-2 mt-2 mb-3 flex items-center">
-                  <select className="appearance-none w-full outline-none" name="" id="">
+                  <select className="appearance-none bg-white w-full outline-none" name="" id="">
                     <option value="">Select source</option>
                     <option value="">Select source</option>
                     <option value="">Select source</option>
@@ -78,7 +78,7 @@ export default function Home() {
                   <span>Destination</span>
                 </div>
                 <div className="pl-5 pr-2 mt-2 mb-3 flex items-center">
-                  <select className="appearance-none w-full outline-none" name="" id="">
+                  <select className="appearance-none bg-white w-full outline-none" name="" id="">
                     <option value="">Select destination</option>
                     <option value="">Select source</option>
                     <option value="">Select source</option>
