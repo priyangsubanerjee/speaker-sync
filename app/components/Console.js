@@ -21,6 +21,9 @@ function Console() {
       autoGainControl: false,
     },
   });
+  const [isLossless, setIsLossless] = React.useState(true);
+  const [inputGain, setInputGain] = React.useState(1);
+  const [outputGain, setOutputGain] = React.useState(1);
 
   const getInputDevices = async () => {
     await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -52,7 +55,7 @@ function Console() {
     }
 
     const gainNode = new AudioWorkletNode(audioContext_n, "gain-processor", {
-      parameterData: { inputGain: 1, outputGain: 1 },
+      parameterData: { inputGain: inputGain, outputGain: outputGain },
     });
 
     gainNode.port.onmessage = (event) => {
@@ -61,27 +64,29 @@ function Console() {
 
     const source = audioContext_n.createMediaStreamSource(stream_n);
     source.connect(gainNode);
-    gainNode.connect(audioContext_n.destination);
 
-    // const mediaStreamDestination = audioContext_n.createMediaStreamDestination();
-    // gainNode.connect(mediaStreamDestination);
+    if (isLossless) {
+      gainNode.connect(audioContext_n.destination);
+    } else {
+      const mediaStreamDestination = audioContext_n.createMediaStreamDestination();
+      gainNode.connect(mediaStreamDestination);
 
-    // const audioElement = new Audio();
-    // audioElement.srcObject = mediaStreamDestination.stream;
+      const audioElement = new Audio();
+      audioElement.srcObject = mediaStreamDestination.stream;
 
-    // if (audioElement.setSinkId && selectedOutputDevice) {
-    //   try {
-    //     await audioElement.setSinkId(selectedOutputDevice);
-    //     console.log(`Output device set to: ${selectedOutputDevice}`);
-    //   } catch (error) {
-    //     console.error(`Error setting output device: ${error}`);
-    //   }
-    // } else {
-    //   console.warn("setSinkId is not supported by this browser.");
-    // }
+      if (audioElement.setSinkId && selectedOutputDevice) {
+        try {
+          await audioElement.setSinkId(selectedOutputDevice);
+          console.log(`Output device set to: ${selectedOutputDevice}`);
+        } catch (error) {
+          console.error(`Error setting output device: ${error}`);
+        }
+      } else {
+        console.warn("setSinkId is not supported by this browser.");
+      }
 
-    // // Start playing the audio
-    // audioElement.play();
+      audioElement.play();
+    }
 
     console.log("Microphone audio processing started.");
     setStream(stream_n);
@@ -125,7 +130,14 @@ function Console() {
   }, [isStreaming]);
 
   useEffect(() => {
-    audioContext?.close();
+    if (audioContext) {
+      if (audioContext.state !== "closed") {
+        audioContext.close();
+        console.log("AudioContext closed.");
+      } else {
+        console.log("AudioContext is already closed.");
+      }
+    }
     setIsStreaming(false);
 
     setConstraints({
@@ -135,6 +147,24 @@ function Console() {
       },
     });
   }, [selectedInputDevice, selectedOutputDevice]);
+
+  useEffect(() => {
+    if (audioContext) {
+      if (audioContext.state !== "closed") {
+        audioContext.close();
+        console.log("AudioContext closed.");
+      } else {
+        console.log("AudioContext is already closed.");
+      }
+    }
+    setIsStreaming(false);
+
+    if (isLossless) {
+      if (outputDevicesList.length > 0) {
+        setSelectedOutputDevice(outputDevicesList[outputDevicesList.length - 1].deviceId);
+      }
+    }
+  }, [inputGain, outputGain, isLossless]);
 
   return (
     <div>
@@ -182,7 +212,7 @@ function Console() {
               <span>Source</span>
             </div>
             <div className="pl-5 pr-2 mt-2 mb-3 flex items-center">
-              <select onChange={(e) => setSelectedInputDevice(e.target.value)} className="appearance-none bg-white w-full outline-none" name="" id="">
+              <select value={selectedInputDevice} onChange={(e) => setSelectedInputDevice(e.target.value)} className="appearance-none bg-white w-full outline-none" name="" id="">
                 {inputDevicesList.map((device) => {
                   return (
                     <option key={device.deviceId} value={device.deviceId}>
@@ -199,32 +229,48 @@ function Console() {
               </svg>
             </div>
           </div>
-          <div className="border rounded-lg">
-            <div className="flex px-4 mt-3 w-fit gap-1 items-center text-sm text-neutral-600">
-              <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 24 24">
-                <path
-                  fill="currentColor"
-                  d="M15 4.25v15.496c0 1.079-1.274 1.651-2.08.934l-4.492-3.994a.75.75 0 0 0-.498-.189H4.25A2.25 2.25 0 0 1 2 14.247V9.749A2.25 2.25 0 0 1 4.25 7.5h3.68a.75.75 0 0 0 .498-.19l4.491-3.993C13.726 2.6 15 3.172 15 4.25m3.992 1.648a.75.75 0 0 1 1.049.156A9.96 9.96 0 0 1 22 12.001a9.96 9.96 0 0 1-1.96 5.946a.75.75 0 0 1-1.205-.893a8.46 8.46 0 0 0 1.665-5.053a8.46 8.46 0 0 0-1.665-5.054a.75.75 0 0 1 .157-1.05M17.143 8.37a.75.75 0 0 1 1.017.302c.536.99.84 2.125.84 3.329a7 7 0 0 1-.84 3.328a.75.75 0 0 1-1.32-.714a5.5 5.5 0 0 0 .66-2.614c0-.948-.24-1.838-.66-2.615a.75.75 0 0 1 .303-1.016"
-                ></path>
-              </svg>
-              <span>Destination</span>
-            </div>
-            <div className="pl-5 pr-2 mt-2 mb-3 flex items-center">
-              <select onChange={(e) => setSelectedOutputDevice(e.target.value)} className="appearance-none bg-white w-full outline-none" name="" id="">
-                {outputDevicesList.map((device) => {
-                  return (
-                    <option key={device.deviceId} value={device.deviceId}>
-                      {device.label}
-                    </option>
-                  );
-                })}
-              </select>
-              <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 24 24">
-                <g fill="none" fillRule="evenodd">
-                  <path d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"></path>
-                  <path fill="currentColor" d="M12.707 15.707a1 1 0 0 1-1.414 0L5.636 10.05A1 1 0 1 1 7.05 8.636l4.95 4.95l4.95-4.95a1 1 0 0 1 1.414 1.414z"></path>
-                </g>
-              </svg>
+          <div
+            onClick={() => {
+              if (isLossless) {
+                alert("Output device is not available in lossless mode");
+              }
+            }}
+          >
+            <div
+              style={{
+                opacity: isLossless ? 0.5 : 1,
+                pointerEvents: isLossless ? "none" : "auto",
+                cursor: isLossless ? "not-allowed" : "pointer",
+                userSelect: isLossless ? "none" : "auto",
+              }}
+              className="border rounded-lg"
+            >
+              <div className="flex px-4 mt-3 w-fit gap-1 items-center text-sm text-neutral-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 24 24">
+                  <path
+                    fill="currentColor"
+                    d="M15 4.25v15.496c0 1.079-1.274 1.651-2.08.934l-4.492-3.994a.75.75 0 0 0-.498-.189H4.25A2.25 2.25 0 0 1 2 14.247V9.749A2.25 2.25 0 0 1 4.25 7.5h3.68a.75.75 0 0 0 .498-.19l4.491-3.993C13.726 2.6 15 3.172 15 4.25m3.992 1.648a.75.75 0 0 1 1.049.156A9.96 9.96 0 0 1 22 12.001a9.96 9.96 0 0 1-1.96 5.946a.75.75 0 0 1-1.205-.893a8.46 8.46 0 0 0 1.665-5.053a8.46 8.46 0 0 0-1.665-5.054a.75.75 0 0 1 .157-1.05M17.143 8.37a.75.75 0 0 1 1.017.302c.536.99.84 2.125.84 3.329a7 7 0 0 1-.84 3.328a.75.75 0 0 1-1.32-.714a5.5 5.5 0 0 0 .66-2.614c0-.948-.24-1.838-.66-2.615a.75.75 0 0 1 .303-1.016"
+                  ></path>
+                </svg>
+                <span>Destination</span>
+              </div>
+              <div className="pl-5 pr-2 mt-2 mb-3 flex items-center">
+                <select value={selectedOutputDevice} onChange={(e) => setSelectedOutputDevice(e.target.value)} className="appearance-none bg-white w-full outline-none" name="" id="">
+                  {outputDevicesList.map((device) => {
+                    return (
+                      <option key={device.deviceId} value={device.deviceId}>
+                        {device.label}
+                      </option>
+                    );
+                  })}
+                </select>
+                <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 24 24">
+                  <g fill="none" fillRule="evenodd">
+                    <path d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"></path>
+                    <path fill="currentColor" d="M12.707 15.707a1 1 0 0 1-1.414 0L5.636 10.05A1 1 0 1 1 7.05 8.636l4.95 4.95l4.95-4.95a1 1 0 0 1 1.414 1.414z"></path>
+                  </g>
+                </svg>
+              </div>
             </div>
           </div>
         </div>
@@ -234,11 +280,22 @@ function Console() {
         <div className="grid grid-cols-2 gap-6 mt-4 max-w-[90%]">
           <div className="flex items-center">
             <p className="text-sm text-neutral-600 whitespace-nowrap">Input gain control:</p>
-            <Slider size="sm" step={0.1} maxValue={5} minValue={0} aria-label="Temperature" defaultValue={1} className="ml-3" />
+            <Slider showTooltip size="sm" step={0.1} maxValue={5} minValue={0} aria-label="Temperature" defaultValue={1} value={inputGain} onChange={(value) => setInputGain(value)} className="ml-3" />
           </div>
           <div className="flex items-center">
             <p className="text-sm text-neutral-600 whitespace-nowrap">Output gain control:</p>
-            <Slider size="sm" step={0.1} maxValue={5} minValue={0} aria-label="Temperature" defaultValue={1} className="ml-3" />
+            <Slider
+              size="sm"
+              value={outputGain}
+              onChange={(value) => setOutputGain(value)}
+              showTooltip
+              step={0.1}
+              maxValue={5}
+              minValue={0}
+              aria-label="Temperature"
+              defaultValue={1}
+              className="ml-3"
+            />
           </div>
         </div>
       </div>
@@ -262,6 +319,17 @@ function Console() {
           </div>
         </div>
         <div className="grid grid-cols-4 mt-4">
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-neutral-600">Lossless audio:</p>
+            <Switch
+              isSelected={isLossless}
+              onValueChange={(value) => {
+                setIsLossless(value);
+              }}
+              size="small"
+              className="scale-80"
+            />
+          </div>
           <div className="flex items-center gap-2">
             <p className="text-sm text-neutral-600">Echo cancellation:</p>
             <Switch size="small" className="scale-80" />
