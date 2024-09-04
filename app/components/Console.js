@@ -63,6 +63,26 @@ function Console() {
     source.connect(gainNode);
     gainNode.connect(audioContext_n.destination);
 
+    // const mediaStreamDestination = audioContext_n.createMediaStreamDestination();
+    // gainNode.connect(mediaStreamDestination);
+
+    // const audioElement = new Audio();
+    // audioElement.srcObject = mediaStreamDestination.stream;
+
+    // if (audioElement.setSinkId && selectedOutputDevice) {
+    //   try {
+    //     await audioElement.setSinkId(selectedOutputDevice);
+    //     console.log(`Output device set to: ${selectedOutputDevice}`);
+    //   } catch (error) {
+    //     console.error(`Error setting output device: ${error}`);
+    //   }
+    // } else {
+    //   console.warn("setSinkId is not supported by this browser.");
+    // }
+
+    // // Start playing the audio
+    // audioElement.play();
+
     console.log("Microphone audio processing started.");
     setStream(stream_n);
     setAudioContext(audioContext_n);
@@ -105,6 +125,9 @@ function Console() {
   }, [isStreaming]);
 
   useEffect(() => {
+    audioContext?.close();
+    setIsStreaming(false);
+
     setConstraints({
       audio: {
         ...constraints.audio,
@@ -176,7 +199,7 @@ function Console() {
               </svg>
             </div>
           </div>
-          <div className="border rounded-lg opacity-50 pointer-events-none select-none">
+          <div className="border rounded-lg">
             <div className="flex px-4 mt-3 w-fit gap-1 items-center text-sm text-neutral-600">
               <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 24 24">
                 <path
