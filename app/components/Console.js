@@ -2,6 +2,7 @@
 "use client";
 import { Button, Slider, Switch } from "@nextui-org/react";
 import React, { useEffect } from "react";
+import LosslessAlert from "./LosslessAlert";
 
 function Console() {
   const [inputDevicesList, setInputDevicesList] = React.useState([]);
@@ -11,10 +12,13 @@ function Console() {
   const [stream, setStream] = React.useState(null);
   const [audioContext, setAudioContext] = React.useState(null);
   const [isStreaming, setIsStreaming] = React.useState(false);
+  const [samplingRate, setSamplingRate] = React.useState(48000);
+  const [losslessAlert, setLosslessAlert] = React.useState(false);
+
   const [constraints, setConstraints] = React.useState({
     audio: {
       deviceId: selectedInputDevice ? { exact: selectedInputDevice } : undefined,
-      sampleRate: 48000,
+      sampleRate: samplingRate,
       channelCount: 1,
       echoCancellation: false,
       noiseSuppression: false,
@@ -45,7 +49,7 @@ function Console() {
 
   const startStreaming = async () => {
     let stream_n = await navigator.mediaDevices.getUserMedia(constraints);
-    let audioContext_n = new AudioContext({ sampleRate: 48000, latencyHint: latency });
+    let audioContext_n = new AudioContext({ sampleRate: samplingRate, latencyHint: latency });
 
     try {
       await audioContext_n.audioWorklet.addModule("/worklet.js");
@@ -173,7 +177,7 @@ function Console() {
         setSelectedOutputDevice(outputDevicesList[outputDevicesList.length - 1].deviceId);
       }
     }
-  }, [inputGain, outputGain, isLossless, latency]);
+  }, [inputGain, outputGain, isLossless, latency, constraints]);
 
   return (
     <div>
@@ -190,7 +194,7 @@ function Console() {
           <h1 className="text-lg font-medium ml-2">SpeakerSync</h1>
         </div>
         <div className="h-1 mx-3 w-1 rounded-full bg-neutral-900"></div>
-        <p className="text-sm text-neutral-600">Last updated 2 minutes ago</p>
+        <p className="text-xs text-neutral-600">Last updated 2 minutes ago</p>
 
         <ul className="flex items-center gap-6 ml-auto">
           <li className="text-sm text-neutral-500">About</li>
@@ -206,7 +210,6 @@ function Console() {
           </li>
         </ul>
       </div>
-
       <div className="px-8 mt-12">
         <p className="text-sm text-neutral-600">Choose input source and output source to sync your audio with the speaker.</p>
         <div className="grid grid-cols-2 gap-4 mt-5 w-[90%]">
@@ -241,7 +244,7 @@ function Console() {
           <div
             onClick={() => {
               if (isLossless) {
-                alert("Output device is not available in lossless mode");
+                setLosslessAlert(true);
               }
             }}
           >
@@ -286,6 +289,17 @@ function Console() {
       </div>
       <div className="px-8 mt-12">
         <p className="font-medium text-neutral-600">Basic settings</p>
+        <div className="flex items-center gap-2 mt-5">
+          <p className="text-sm text-neutral-600">Lossless audio:</p>
+          <Switch
+            isSelected={isLossless}
+            onValueChange={(value) => {
+              setIsLossless(value);
+            }}
+            size="small"
+            className="scale-80"
+          />
+        </div>
         <div className="grid grid-cols-2 gap-6 mt-4 max-w-[90%]">
           <div className="flex items-center">
             <p className="text-sm text-neutral-600 whitespace-nowrap">Input gain control:</p>
@@ -313,15 +327,15 @@ function Console() {
         <div className="flex items-center mt-6">
           <p className="text-sm text-neutral-600">Sampling rate:</p>
           <div className="ml-5 flex items-center gap-4">
-            <div className="flex items-center">
-              <input type="radio" name="" id="" className="h-5 w-5" />
-              <label htmlFor="" className="text-sm ml-2">
+            <div className="flex items-center cursor-pointer">
+              <input onChange={(e) => setSamplingRate(41400)} type="radio" name="sample-rate" id="sample-rate-44" className="h-5 w-5" />
+              <label htmlFor="sample-rate-44" className="text-sm ml-2 font-mono cursor-pointer">
                 41.4 KHz
               </label>
             </div>
-            <div className="flex items-center">
-              <input type="radio" name="" id="" className="h-5 w-5" />
-              <label htmlFor="" className="text-sm ml-2">
+            <div className="flex items-center cursor-pointer">
+              <input defaultChecked onChange={(e) => setSamplingRate(48000)} type="radio" name="sample-rate" id="sample-rate-48" className="h-5 w-5" />
+              <label htmlFor="sample-rate-48" className="text-sm ml-2 font-mono cursor-pointer">
                 48 KHz
               </label>
             </div>
@@ -329,27 +343,52 @@ function Console() {
         </div>
         <div className="grid grid-cols-4 mt-4">
           <div className="flex items-center gap-2">
-            <p className="text-sm text-neutral-600">Lossless audio:</p>
+            <p className="text-sm text-neutral-600">Echo cancellation:</p>
             <Switch
-              isSelected={isLossless}
+              isSelected={constraints.audio.echoCancellation}
               onValueChange={(value) => {
-                setIsLossless(value);
+                setConstraints({
+                  audio: {
+                    ...constraints.audio,
+                    echoCancellation: value,
+                  },
+                });
               }}
               size="small"
               className="scale-80"
             />
           </div>
           <div className="flex items-center gap-2">
-            <p className="text-sm text-neutral-600">Echo cancellation:</p>
-            <Switch size="small" className="scale-80" />
-          </div>
-          <div className="flex items-center gap-2">
             <p className="text-sm text-neutral-600">Noise suppression:</p>
-            <Switch size="small" className="scale-80" />
+            <Switch
+              isSelected={constraints.audio.noiseSuppression}
+              onValueChange={(value) => {
+                setConstraints({
+                  audio: {
+                    ...constraints.audio,
+                    noiseSuppression: value,
+                  },
+                });
+              }}
+              size="small"
+              className="scale-80"
+            />
           </div>
           <div className="flex items-center gap-2">
             <p className="text-sm text-neutral-600">Auto gain control:</p>
-            <Switch size="small" className="scale-80" />
+            <Switch
+              isSelected={constraints.audio.autoGainControl}
+              onValueChange={(value) => {
+                setConstraints({
+                  audio: {
+                    ...constraints.audio,
+                    autoGainControl: value,
+                  },
+                });
+              }}
+              size="small"
+              className="scale-80"
+            />
           </div>
         </div>
 
@@ -361,15 +400,14 @@ function Console() {
             showTooltip
             size="sm"
             step={0.1}
-            maxValue={10}
+            maxValue={5}
             minValue={0}
-            aria-label="Temperature"
+            aria-label="Latency"
             defaultValue={0}
             className="max-w-[250px] ml-3"
           />
         </div>
       </div>
-
       <audio
         id="sample-audio"
         onEnded={() => {
@@ -378,7 +416,6 @@ function Console() {
         }}
         src="/notification.mov"
       ></audio>
-
       <div className="flex items-center mt-16 px-8">
         <div className="flex items-center w-fit gap-2">
           <button className="text-sm text-neutral-500">Reset settings</button>
@@ -387,6 +424,7 @@ function Console() {
             id="sample-audio-btn"
             onClick={() => {
               document.getElementById("sample-audio").play();
+              document.getElementById("sample-audio").volume = 0.8;
               document.getElementById("sample-audio-btn").style.color = "#3b82f6";
             }}
             className="text-sm text-neutral-500"
@@ -397,15 +435,28 @@ function Console() {
         <div className="flex items-center ml-auto">
           <Button onClick={() => setIsStreaming(!isStreaming)} className="text-white bg-neutral-800 rounded-lg">
             <span className="text-sm">{isStreaming ? "Stop streaming" : "Start streaming"}</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width={18} height={18} viewBox="0 0 256 256">
-              <path
-                fill="currentColor"
-                d="M240 128a15.74 15.74 0 0 1-7.6 13.51L88.32 229.65a16 16 0 0 1-16.2.3A15.86 15.86 0 0 1 64 216.13V39.87a15.86 15.86 0 0 1 8.12-13.82a16 16 0 0 1 16.2.3l144.08 88.14A15.74 15.74 0 0 1 240 128"
-              ></path>
-            </svg>
+            {isStreaming ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 16 16">
+                <path
+                  fill="currentColor"
+                  fillRule="evenodd"
+                  d="M5 3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zm5 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1z"
+                  clipRule="evenodd"
+                ></path>
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width={18} height={18} viewBox="0 0 256 256">
+                <path
+                  fill="currentColor"
+                  d="M240 128a15.74 15.74 0 0 1-7.6 13.51L88.32 229.65a16 16 0 0 1-16.2.3A15.86 15.86 0 0 1 64 216.13V39.87a15.86 15.86 0 0 1 8.12-13.82a16 16 0 0 1 16.2.3l144.08 88.14A15.74 15.74 0 0 1 240 128"
+                ></path>
+              </svg>
+            )}
           </Button>
         </div>
       </div>
+
+      {losslessAlert && <LosslessAlert close={() => setLosslessAlert(false)} />}
     </div>
   );
 }
