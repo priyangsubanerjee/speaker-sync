@@ -45,6 +45,12 @@ function Console() {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const audioOutputDevices = devices.filter((device) => device.kind === "audiooutput");
     setOutputDevicesList(audioOutputDevices);
+
+    if (isLossless) {
+      if (audioOutputDevices.length > 0) {
+        setSelectedOutputDevice(audioOutputDevices[audioOutputDevices.length - 1].deviceId);
+      }
+    }
   };
 
   const startStreaming = async () => {
@@ -425,7 +431,7 @@ function Console() {
             onClick={() => {
               document.getElementById("sample-audio").play();
               document.getElementById("sample-audio").volume = 0.8;
-              document.getElementById("sample-audio-btn").style.color = "#3b82f6";
+              document.getElementById("sample-audio-btn").style.color = "#2563eb";
             }}
             className="text-sm text-neutral-500"
           >
