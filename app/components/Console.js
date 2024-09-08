@@ -229,7 +229,7 @@ function Console({ setIsAboutOpen }) {
         </div>
         <div className="hidden md:flex items-center">
           <div className="h-1 mx-3 w-1 rounded-full bg-neutral-900"></div>
-          <p className="text-xs text-neutral-600">Last updated 2 minutes ago</p>
+          <p className="text-xs text-neutral-600">Last updated Sept 2024</p>
         </div>
         <ul className="hidden md:flex items-center gap-6 ml-auto">
           <li onClick={() => setIsAboutOpen(true)} className="text-sm text-neutral-500 cursor-pointer hover:underline">

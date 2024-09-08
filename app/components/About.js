@@ -34,7 +34,9 @@ function About({ isAboutOpen, setIsAboutOpen }) {
         </p>
         <div className="flex items-center justify-center mt-10 gap-4">
           <div>
-            <Button className="text-neutral-800 bg-neutral-100 text-base rounded-lg">Contact us</Button>
+            <a href="https://priyangsu.dev/message">
+              <Button className="text-neutral-800 bg-neutral-100 text-base rounded-lg">Contact us</Button>
+            </a>
           </div>
           <div>
             <Button onClick={() => setIsAboutOpen(!isAboutOpen)} className="text-white bg-neutral-800 text-base rounded-lg">
@@ -45,7 +47,7 @@ function About({ isAboutOpen, setIsAboutOpen }) {
         <div className="flex justify-center mt-20">
           <p className="text-sm text-neutral-600">
             Developed by{" "}
-            <a className="hover:underline" href="">
+            <a className="hover:underline" href="https://priyangsu.dev">
               Priyangsu Banerjee
             </a>
           </p>
