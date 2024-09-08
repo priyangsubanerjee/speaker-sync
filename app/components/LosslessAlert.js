@@ -30,16 +30,16 @@ function LosslessAlert({ close }) {
           <div className="mt-6">
             <ul className="flex flex-wrap gap-4 text-sm text-neutral-700">
               <li className="hover:text-black hover:underline">
-                <a href="">Mac OS</a>
+                <a href="https://support.apple.com/en-lk/guide/mac-help/mchlp2256/mac#:~:text=On%20your%20Mac%2C%20choose%20Apple,list%20of%20sound%20output%20devices.">Mac OS</a>
               </li>
               <li className="hover:text-black hover:underline">
-                <a href="">iOS & iPad OS</a>
+                <a href="https://support.switcherstudio.com/article/316-checking-or-changing-the-audio-output">iOS & iPad OS</a>
               </li>
               <li className="hover:text-black hover:underline">
-                <a href="">Android</a>
+                <a href="https://www.businessinsider.com/guides/tech/how-to-change-audio-output-on-android?IR=T">Android</a>
               </li>
               <li className="hover:text-black hover:underline">
-                <a href="">Windows</a>
+                <a href="https://answers.microsoft.com/en-us/windows/forum/all/windows-11-audio-output-selection-from-taskbar/e643ec94-751a-48cb-b246-54943fde0847">Windows</a>
               </li>
             </ul>
           </div>

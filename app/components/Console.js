@@ -115,6 +115,23 @@ function Console() {
     });
   };
 
+  const resetSettings = () => {
+    setInputGain(1);
+    setOutputGain(1);
+    setLatency(0);
+    setSamplingRate(48000);
+    setConstraints({
+      audio: {
+        deviceId: selectedInputDevice ? { exact: selectedInputDevice } : undefined,
+        sampleRate: 48000,
+        channelCount: 1,
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+      },
+    });
+  };
+
   React.useEffect(() => {
     getInputDevices();
     getOutputDevices();
@@ -424,7 +441,9 @@ function Console() {
       ></audio>
       <div className="flex items-center mt-16 px-8">
         <div className="flex items-center w-fit gap-2">
-          <button className="text-sm text-neutral-500">Reset settings</button>
+          <button onClick={resetSettings} className="text-sm text-neutral-500">
+            Reset settings
+          </button>
           <span className="text-neutral-400">|</span>
           <button
             id="sample-audio-btn"
