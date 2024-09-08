@@ -4,7 +4,7 @@ import { Button, Slider, Switch } from "@nextui-org/react";
 import React, { useEffect } from "react";
 import LosslessAlert from "./LosslessAlert";
 
-function Console() {
+function Console({ setIsAboutOpen }) {
   const [inputDevicesList, setInputDevicesList] = React.useState([]);
   const [outputDevicesList, setOutputDevicesList] = React.useState([]);
   const [selectedInputDevice, setSelectedInputDevice] = React.useState(null);
@@ -204,8 +204,8 @@ function Console() {
 
   return (
     <div>
-      <div className="flex items-center px-8 mt-6">
-        <div className="w-fit flex items-center gap-1">
+      <div className="flex items-center px-4 md:px-8 mt-6">
+        <div className="w-fit hidden md:flex items-center gap-1">
           <svg xmlns="http://www.w3.org/2000/svg" width={40} height={40} viewBox="0 0 24 24">
             <g fill="currentColor">
               <path d="M22.143 3.302c-.328-.547-.665-.921-.913-1.128a.75.75 0 0 0-.96 1.152c.127.106.353.357.587.747c.401.67.643 1.475.643 2.427s-.242 1.758-.643 2.427c-.234.39-.46.641-.587.747a.75.75 0 0 0 .96 1.152c.248-.207.585-.58.913-1.128C22.68 8.805 23 7.736 23 6.5s-.32-2.305-.857-3.198"></path>
@@ -216,26 +216,48 @@ function Console() {
           </svg>
           <h1 className="text-lg font-medium ml-2">SpeakerSync</h1>
         </div>
-        <div className="h-1 mx-3 w-1 rounded-full bg-neutral-900"></div>
-        <p className="text-xs text-neutral-600">Last updated 2 minutes ago</p>
-
-        <ul className="flex items-center gap-6 ml-auto">
-          <li className="text-sm text-neutral-500">About</li>
-          <li className="text-sm text-neutral-500">Questions</li>
-          <li className="text-sm text-neutral-500">Contact us</li>
+        <div className="w-fit flex md:hidden items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" width={32} height={32} viewBox="0 0 24 24">
+            <g fill="currentColor">
+              <path d="M22.143 3.302c-.328-.547-.665-.921-.913-1.128a.75.75 0 0 0-.96 1.152c.127.106.353.357.587.747c.401.67.643 1.475.643 2.427s-.242 1.758-.643 2.427c-.234.39-.46.641-.587.747a.75.75 0 0 0 .96 1.152c.248-.207.585-.58.913-1.128C22.68 8.805 23 7.736 23 6.5s-.32-2.305-.857-3.198"></path>
+              <path d="M19.874 4.396a3.1 3.1 0 0 0-.674-.746a.75.75 0 0 0-.9 1.2c.062.046.19.175.326.379c.234.35.374.77.374 1.271s-.14.92-.374 1.271a1.7 1.7 0 0 1-.326.379l-.084.073A.75.75 0 0 0 19.2 9.35c.189-.141.435-.388.674-.746A3.73 3.73 0 0 0 20.5 6.5c0-.812-.235-1.517-.626-2.104M17 3.75a.75.75 0 0 0-1.314-.494L14.16 5h-1.41a.75.75 0 0 0-.75.75v1.5c0 .414.336.75.75.75h1.41l1.526 1.744A.75.75 0 0 0 17 9.25z"></path>
+              <path d="M4.25 4H12a1 1 0 0 0-1 1v.5H4.25a.75.75 0 0 0-.75.75v11.502c0 .414.336.75.75.75h15.499a.75.75 0 0 0 .75-.75v-5.77c.474.069.974-.057 1.371-.388q.063-.052.129-.112v6.27a2.25 2.25 0 0 1-2.25 2.25H4.25A2.25 2.25 0 0 1 2 17.752V6.25A2.25 2.25 0 0 1 4.25 4"></path>
+              <path d="M13.75 15.5a.75.75 0 0 1 .102 1.493L13.75 17h-3.5a.75.75 0 0 1-.102-1.493l.102-.007z"></path>
+            </g>
+          </svg>
+          <h1 className="text-base font-medium ml-2">SpeakerSync</h1>
+        </div>
+        <div className="hidden md:flex items-center">
+          <div className="h-1 mx-3 w-1 rounded-full bg-neutral-900"></div>
+          <p className="text-xs text-neutral-600">Last updated 2 minutes ago</p>
+        </div>
+        <ul className="hidden md:flex items-center gap-6 ml-auto">
+          <li onClick={() => setIsAboutOpen(true)} className="text-sm text-neutral-500 cursor-pointer hover:underline">
+            About
+          </li>
+          <li className="text-sm text-neutral-500 cursor-pointer hover:underline">
+            <a href="https://pages.razorpay.com/pl_OuaTr039U22ZDf/view">Support</a>
+          </li>
           <li>
-            <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 24 24">
-              <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}>
-                <path d="M16 22.027v-2.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7a5.44 5.44 0 0 0-1.5-3.75a5.07 5.07 0 0 0-.09-3.77s-1.18-.35-3.91 1.48a13.4 13.4 0 0 0-7 0c-2.73-1.83-3.91-1.48-3.91-1.48A5.07 5.07 0 0 0 5 5.797a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7a3.37 3.37 0 0 0-.94 2.58v2.87"></path>
-                <path d="M9 20.027c-3 .973-5.5 0-7-3"></path>
-              </g>
-            </svg>
+            <a href="https://github.com/priyangsubanerjee">
+              <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 24 24">
+                <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}>
+                  <path d="M16 22.027v-2.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7a5.44 5.44 0 0 0-1.5-3.75a5.07 5.07 0 0 0-.09-3.77s-1.18-.35-3.91 1.48a13.4 13.4 0 0 0-7 0c-2.73-1.83-3.91-1.48-3.91-1.48A5.07 5.07 0 0 0 5 5.797a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7a3.37 3.37 0 0 0-.94 2.58v2.87"></path>
+                  <path d="M9 20.027c-3 .973-5.5 0-7-3"></path>
+                </g>
+              </svg>
+            </a>
           </li>
         </ul>
+        <Button isIconOnly className="md:hidden rounded-md bg-transparent border ml-auto">
+          <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 24 24">
+            <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 8.5h16m-16 7h16" color="currentColor"></path>
+          </svg>
+        </Button>
       </div>
-      <div className="px-8 mt-12">
-        <p className="text-sm text-neutral-600">Choose input source and output source to sync your audio with the speaker.</p>
-        <div className="grid grid-cols-2 gap-4 mt-5 w-[90%]">
+      <div className="px-4 md:px-8 mt-8 md:mt-12">
+        <p className="text-sm text-neutral-600 leading-7 md:leading-6">Choose input source and output source to sync your audio with the speaker.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5 md:w-[90%]">
           <div className="border rounded-lg">
             <div className="flex px-4 mt-3 w-fit gap-1 items-center text-sm text-neutral-600">
               <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 24 24">
@@ -323,7 +345,7 @@ function Console() {
             className="scale-80"
           />
         </div>
-        <div className="grid grid-cols-2 gap-6 mt-4 max-w-[90%]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 mt-4 max-w-[90%]">
           <div className="flex items-center">
             <p className="text-sm text-neutral-600 whitespace-nowrap">Input gain control:</p>
             <Slider showTooltip size="sm" step={0.1} maxValue={5} minValue={0} aria-label="Temperature" defaultValue={1} value={inputGain} onChange={(value) => setInputGain(value)} className="ml-3" />
@@ -347,9 +369,9 @@ function Console() {
       </div>
       <div className="px-8 mt-12">
         <p className="font-medium text-neutral-600">Advanced settings</p>
-        <div className="flex items-center mt-6">
+        <div className="md:flex items-center mt-6">
           <p className="text-sm text-neutral-600">Sampling rate:</p>
-          <div className="ml-5 flex items-center gap-4">
+          <div className="md:ml-5 mt-4 md:mt-0 flex items-center gap-4 flex-wrap">
             <div className="flex items-center cursor-pointer">
               <input onChange={(e) => setSamplingRate(41400)} type="radio" name="sample-rate" id="sample-rate-44" className="h-5 w-5" />
               <label htmlFor="sample-rate-44" className="text-sm ml-2 font-mono cursor-pointer">
@@ -364,7 +386,7 @@ function Console() {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-4 mt-4">
+        <div className="grid grid-cols-1 gap-4 md:gap-1 md:grid-cols-4 mt-4">
           <div className="flex items-center gap-2">
             <p className="text-sm text-neutral-600">Echo cancellation:</p>
             <Switch
@@ -416,7 +438,7 @@ function Console() {
         </div>
 
         <div className="flex items-center mt-4">
-          <p className="text-sm text-neutral-600">Latency control:</p>
+          <p className="text-sm text-neutral-600 whitespace-nowrap">Latency control:</p>
           <Slider
             value={latency}
             onChange={(value) => setLatency(value)}
@@ -427,7 +449,7 @@ function Console() {
             minValue={0}
             aria-label="Latency"
             defaultValue={0}
-            className="max-w-[250px] ml-3"
+            className="md:max-w-[250px] ml-3"
           />
         </div>
       </div>
@@ -439,7 +461,7 @@ function Console() {
         }}
         src="/notification.mov"
       ></audio>
-      <div className="flex items-center mt-16 px-8">
+      <div className="flex flex-wrap items-center mt-16 px-8 gap-12">
         <div className="flex items-center w-fit gap-2">
           <button onClick={resetSettings} className="text-sm text-neutral-500">
             Reset settings

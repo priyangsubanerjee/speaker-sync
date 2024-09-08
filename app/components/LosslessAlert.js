@@ -4,8 +4,8 @@ import React from "react";
 function LosslessAlert({ close }) {
   return (
     <div className="fixed inset-0 h-full w-full bg-black/50 flex items-center justify-center">
-      <div className="h-fit py-8 w-[600px] bg-white rounded-xl">
-        <div className="px-8">
+      <div className="h-fit py-6 md:py-8 w-[97%] md:w-[600px] bg-white rounded-xl">
+        <div className="px-6 md:px-8">
           <div className="flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" width={40} height={40} viewBox="0 0 512 512">
               <path
@@ -17,10 +17,10 @@ function LosslessAlert({ close }) {
                 d="M153.523 153.522a145.746 145.746 0 0 0-.989 205.944l22.617-22.617a113.8 113.8 0 0 1 .989-160.71Zm182.25 21.705a113.8 113.8 0 0 1 1.5 162.05L359.9 359.9a145.746 145.746 0 0 0-1.5-207.285Zm-41.007 41.007a55.914 55.914 0 1 0 17.658 40.759a55.78 55.78 0 0 0-17.658-40.759m-38.342 64.759a24 24 0 1 1 24-24a24 24 0 0 1-24 24"
               ></path>
             </svg>
-            <h2 className="ml-3 font-semibold text-xl">Lossless Audio</h2>
+            <h2 className="ml-3 font-semibold text-lg md:text-xl">Lossless Audio</h2>
           </div>
           <div className="mt-6">
-            <p className="text-base leading-8 text-neutral-700">
+            <p className="text-sm md:text-base leading-7 md:leading-8 text-neutral-700">
               Output device switching is not supported in lossless audio mode. Please disable lossless audio in <span className="font-medium text-black">Basic settings</span> to switch output devices.
             </p>
             <p className="text-sm leading-7 mt-5 text-neutral-500">
