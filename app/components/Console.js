@@ -4,7 +4,7 @@ import { Button, Slider, Switch } from "@nextui-org/react";
 import React, { useEffect } from "react";
 import LosslessAlert from "./LosslessAlert";
 
-function Console({ setIsAboutOpen }) {
+function Console({ setIsAboutOpen, getStartedClicked }) {
   const [inputDevicesList, setInputDevicesList] = React.useState([]);
   const [outputDevicesList, setOutputDevicesList] = React.useState([]);
   const [selectedInputDevice, setSelectedInputDevice] = React.useState(null);
@@ -133,9 +133,11 @@ function Console({ setIsAboutOpen }) {
   };
 
   React.useEffect(() => {
-    getInputDevices();
-    getOutputDevices();
-  }, []);
+    if (getStartedClicked) {
+      getInputDevices();
+      getOutputDevices();
+    }
+  }, [getStartedClicked]);
 
   React.useEffect(() => {
     const handleDeviceChange = async () => {

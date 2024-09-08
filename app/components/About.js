@@ -2,7 +2,7 @@
 import { Button } from "@nextui-org/react";
 import React from "react";
 
-function About({ isAboutOpen, setIsAboutOpen }) {
+function About({ isAboutOpen, setIsAboutOpen, setGetStartedClicked }) {
   return (
     <div className="absolute inset-0 h-full w-full bg-white">
       <div className="relative">
@@ -39,7 +39,13 @@ function About({ isAboutOpen, setIsAboutOpen }) {
             </a>
           </div>
           <div>
-            <Button onClick={() => setIsAboutOpen(!isAboutOpen)} className="text-white bg-neutral-800 text-base rounded-lg">
+            <Button
+              onClick={() => {
+                setIsAboutOpen(!isAboutOpen);
+                setGetStartedClicked(true);
+              }}
+              className="text-white bg-neutral-800 text-base rounded-lg"
+            >
               Get started
             </Button>
           </div>
