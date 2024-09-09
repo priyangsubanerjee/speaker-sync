@@ -2,8 +2,6 @@
 
 SpeakerSync is a web-based application designed to turn your computer into a dynamic audio hub or amplifier. Using Bluetooth, RF, or wired earphones, SpeakerSync converts them into wireless microphones, providing real-time audio output to speakers or any attached devices. Whether it's for live streaming, virtual meetings, or family celebrations, SpeakerSync ensures clear, lossless audio with full control over input and output, echo cancellation, noise suppression, and more.
 
----
-
 ## Key Features
 
 - **Bluetooth/RF/Wired Earphones as Mics**: Convert your earphones into wireless microphones for real-time audio capture.
@@ -15,3 +13,10 @@ SpeakerSync is a web-based application designed to turn your computer into a dyn
 - **Noise Suppression**: Reduce background noise to improve audio quality.
 - **Auto Gain Control**: Automatically adjusts microphone sensitivity to ensure balanced sound.
 - **Latency Control**: Fine-tune latency to match your environment and use case.
+
+## Browser Support
+
+- **Chrome**: 90+
+- **Firefox**: 87+
+- **Safari**: 14+
+- **Edge**: 90+
