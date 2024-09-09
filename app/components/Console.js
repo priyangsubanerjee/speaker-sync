@@ -238,7 +238,7 @@ function Console({ setIsAboutOpen, getStartedClicked }) {
             About
           </li>
           <li className="text-sm text-neutral-500 cursor-pointer hover:underline">
-            <a href="https://pages.razorpay.com/pl_OuaTr039U22ZDf/view">Support</a>
+            <a href="">Support</a>
           </li>
           <li>
             <a href="https://github.com/priyangsubanerjee">
