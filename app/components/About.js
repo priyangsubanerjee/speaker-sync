@@ -53,7 +53,7 @@ function About({ isAboutOpen, setIsAboutOpen, setGetStartedClicked }) {
         <div className="flex justify-center mt-20">
           <p className="text-sm text-neutral-600">
             Developed by{" "}
-            <a className="hover:underline" href="https://priyangsu.dev">
+            <a className="hover:underline text-black" href="https://priyangsu.dev">
               Priyangsu Banerjee
             </a>
           </p>
