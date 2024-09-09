@@ -233,8 +233,8 @@ function Console({ setIsAboutOpen, getStartedClicked }) {
           <div className="h-1 mx-3 w-1 rounded-full bg-neutral-900"></div>
           <p className="text-xs text-neutral-600">Last updated Sept 2024</p>
         </div>
-        <ul className="hidden md:flex items-center gap-6 ml-auto">
-          <li onClick={() => setIsAboutOpen(true)} className="text-sm text-neutral-500 cursor-pointer hover:underline">
+        <ul className="flex items-center gap-6 ml-auto">
+          <li onClick={() => setIsAboutOpen(true)} className="hidden md:block text-sm text-neutral-500 cursor-pointer hover:underline">
             About
           </li>
           <li className="text-sm text-neutral-500 cursor-pointer hover:underline">
@@ -251,11 +251,6 @@ function Console({ setIsAboutOpen, getStartedClicked }) {
             </a>
           </li>
         </ul>
-        <Button isIconOnly className="md:hidden rounded-md bg-transparent border ml-auto">
-          <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 24 24">
-            <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 8.5h16m-16 7h16" color="currentColor"></path>
-          </svg>
-        </Button>
       </div>
       <div className="px-4 md:px-8 mt-8 md:mt-12">
         <p className="text-sm text-neutral-600 leading-7 md:leading-6">Choose input source and output source to sync your audio with the speaker.</p>
