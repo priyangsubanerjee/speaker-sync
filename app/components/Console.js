@@ -238,7 +238,7 @@ function Console({ setIsAboutOpen, getStartedClicked }) {
             About
           </li>
           <li className="text-sm text-neutral-500 cursor-pointer hover:underline">
-            <a href="">Support</a>
+            <a href="https://buymeacoffee.com/priyangsu">Support</a>
           </li>
           <li>
             <a href="https://github.com/priyangsubanerjee">
